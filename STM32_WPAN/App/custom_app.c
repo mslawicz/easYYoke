@@ -35,7 +35,11 @@
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
 {
-  /* easYYoke_SVC */
+  /* Device_Information */
+  /* Battery */
+  uint8_t               Bat_lvl_Notification_Status;
+  /* Human_Interface_Device */
+  uint8_t               Report_Notification_Status;
   /* USER CODE BEGIN CUSTOM_APP_Context_t */
 
   /* USER CODE END CUSTOM_APP_Context_t */
@@ -76,7 +80,13 @@ uint8_t NotifyCharData[247];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-/* easYYoke_SVC */
+/* Device_Information */
+/* Battery */
+static void Custom_Bat_lvl_Update_Char(void);
+static void Custom_Bat_lvl_Send_Notification(void);
+/* Human_Interface_Device */
+static void Custom_Report_Update_Char(void);
+static void Custom_Report_Send_Notification(void);
 
 /* USER CODE BEGIN PFP */
 
@@ -94,11 +104,73 @@ void Custom_STM_App_Notification(Custom_STM_App_Notification_evt_t *pNotificatio
 
     /* USER CODE END CUSTOM_STM_App_Notification_Custom_Evt_Opcode */
 
-    /* easYYoke_SVC */
-    case CUSTOM_STM_EASYYOKE_CH_READ_EVT:
-      /* USER CODE BEGIN CUSTOM_STM_EASYYOKE_CH_READ_EVT */
+    /* Device_Information */
+    case CUSTOM_STM_MAN_NAME_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_MAN_NAME_READ_EVT */
 
-      /* USER CODE END CUSTOM_STM_EASYYOKE_CH_READ_EVT */
+      /* USER CODE END CUSTOM_STM_MAN_NAME_READ_EVT */
+      break;
+
+    case CUSTOM_STM_MOD_NUMB_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_MOD_NUMB_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_MOD_NUMB_READ_EVT */
+      break;
+
+    case CUSTOM_STM_PNP_ID_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_PNP_ID_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_PNP_ID_READ_EVT */
+      break;
+
+    /* Battery */
+    case CUSTOM_STM_BAT_LVL_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_BAT_LVL_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_BAT_LVL_READ_EVT */
+      break;
+
+    case CUSTOM_STM_BAT_LVL_NOTIFY_ENABLED_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_BAT_LVL_NOTIFY_ENABLED_EVT */
+
+      /* USER CODE END CUSTOM_STM_BAT_LVL_NOTIFY_ENABLED_EVT */
+      break;
+
+    case CUSTOM_STM_BAT_LVL_NOTIFY_DISABLED_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_BAT_LVL_NOTIFY_DISABLED_EVT */
+
+      /* USER CODE END CUSTOM_STM_BAT_LVL_NOTIFY_DISABLED_EVT */
+      break;
+
+    /* Human_Interface_Device */
+    case CUSTOM_STM_HID_INFO_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_HID_INFO_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_HID_INFO_READ_EVT */
+      break;
+
+    case CUSTOM_STM_REP_MAP_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_REP_MAP_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_REP_MAP_READ_EVT */
+      break;
+
+    case CUSTOM_STM_REPORT_READ_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_REPORT_READ_EVT */
+
+      /* USER CODE END CUSTOM_STM_REPORT_READ_EVT */
+      break;
+
+    case CUSTOM_STM_REPORT_NOTIFY_ENABLED_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_REPORT_NOTIFY_ENABLED_EVT */
+
+      /* USER CODE END CUSTOM_STM_REPORT_NOTIFY_ENABLED_EVT */
+      break;
+
+    case CUSTOM_STM_REPORT_NOTIFY_DISABLED_EVT:
+      /* USER CODE BEGIN CUSTOM_STM_REPORT_NOTIFY_DISABLED_EVT */
+
+      /* USER CODE END CUSTOM_STM_REPORT_NOTIFY_DISABLED_EVT */
       break;
 
     default:
@@ -168,7 +240,86 @@ void Custom_APP_Init(void)
  *
  *************************************************************/
 
-/* easYYoke_SVC */
+/* Device_Information */
+/* Battery */
+void Custom_Bat_lvl_Update_Char(void) /* Property Read */
+{
+  uint8_t updateflag = 0;
+
+  /* USER CODE BEGIN Bat_lvl_UC_1*/
+
+  /* USER CODE END Bat_lvl_UC_1*/
+
+  if (updateflag != 0)
+  {
+    Custom_STM_App_Update_Char(CUSTOM_STM_BAT_LVL, (uint8_t *)UpdateCharData);
+  }
+
+  /* USER CODE BEGIN Bat_lvl_UC_Last*/
+
+  /* USER CODE END Bat_lvl_UC_Last*/
+  return;
+}
+
+void Custom_Bat_lvl_Send_Notification(void) /* Property Notification */
+{
+  uint8_t updateflag = 0;
+
+  /* USER CODE BEGIN Bat_lvl_NS_1*/
+
+  /* USER CODE END Bat_lvl_NS_1*/
+
+  if (updateflag != 0)
+  {
+    Custom_STM_App_Update_Char(CUSTOM_STM_BAT_LVL, (uint8_t *)NotifyCharData);
+  }
+
+  /* USER CODE BEGIN Bat_lvl_NS_Last*/
+
+  /* USER CODE END Bat_lvl_NS_Last*/
+
+  return;
+}
+
+/* Human_Interface_Device */
+void Custom_Report_Update_Char(void) /* Property Read */
+{
+  uint8_t updateflag = 0;
+
+  /* USER CODE BEGIN Report_UC_1*/
+
+  /* USER CODE END Report_UC_1*/
+
+  if (updateflag != 0)
+  {
+    Custom_STM_App_Update_Char(CUSTOM_STM_REPORT, (uint8_t *)UpdateCharData);
+  }
+
+  /* USER CODE BEGIN Report_UC_Last*/
+
+  /* USER CODE END Report_UC_Last*/
+  return;
+}
+
+void Custom_Report_Send_Notification(void) /* Property Notification */
+{
+  uint8_t updateflag = 0;
+
+  /* USER CODE BEGIN Report_NS_1*/
+
+  /* USER CODE END Report_NS_1*/
+
+  if (updateflag != 0)
+  {
+    Custom_STM_App_Update_Char(CUSTOM_STM_REPORT, (uint8_t *)NotifyCharData);
+  }
+
+  /* USER CODE BEGIN Report_NS_Last*/
+
+  /* USER CODE END Report_NS_Last*/
+
+  return;
+}
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS*/
 

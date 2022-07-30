@@ -28,8 +28,16 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct{
-  uint16_t  CustomEasyyoke_SvcHdle;                    /**< easYYoke_SVC handle */
-  uint16_t  CustomEasyyoke_ChHdle;                  /**< easYYoke_CH handle */
+  uint16_t  CustomDevinfoHdle;                    /**< Device_Information handle */
+  uint16_t  CustomMan_NameHdle;                  /**< Manufacturer_Name_String handle */
+  uint16_t  CustomMod_NumbHdle;                  /**< Model_Number_String handle */
+  uint16_t  CustomPnp_IdHdle;                  /**< PnP_ID handle */
+  uint16_t  CustomBattHdle;                    /**< Battery handle */
+  uint16_t  CustomBat_LvlHdle;                  /**< Battery_Level handle */
+  uint16_t  CustomHidHdle;                    /**< Human_Interface_Device handle */
+  uint16_t  CustomHid_InfoHdle;                  /**< Human_Interface_Device_Information handle */
+  uint16_t  CustomRep_MapHdle;                  /**< Report_Map handle */
+  uint16_t  CustomReportHdle;                  /**< Report handle */
 }CustomContext_t;
 
 /* USER CODE BEGIN PTD */
@@ -59,7 +67,13 @@ typedef struct{
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-uint8_t SizeEasyyoke_Ch = 1;
+uint8_t SizeMan_Name = 1;
+uint8_t SizeMod_Numb = 1;
+uint8_t SizePnp_Id = 1;
+uint8_t SizeBat_Lvl = 1;
+uint8_t SizeHid_Info = 50;
+uint8_t SizeRep_Map = 1;
+uint8_t SizeReport = 1;
 
 /**
  * START of Section BLE_DRIVER_CONTEXT
@@ -104,8 +118,6 @@ do {\
  D973F2E1-B19E-11E2-9E96-0800200C9A66: Characteristic_1 128bits UUID
  D973F2E2-B19E-11E2-9E96-0800200C9A66: Characteristic_2 128bits UUID
  */
-#define COPY_EASYYOKE_SVC_UUID(uuid_struct)          COPY_UUID_128(uuid_struct,0x00,0x00,0x00,0x00,0xcc,0x7a,0x48,0x2a,0x98,0x4a,0x7f,0x2e,0xd5,0xb3,0xe5,0x8f)
-#define COPY_EASYYOKE_CH_UUID(uuid_struct)    COPY_UUID_128(uuid_struct,0x00,0x00,0x00,0x00,0x8e,0x22,0x45,0x41,0x9d,0x4c,0x21,0xed,0xae,0x82,0xed,0x19)
 
 /* USER CODE BEGIN PF */
 
@@ -121,6 +133,8 @@ static SVCCTL_EvtAckStatus_t Custom_STM_Event_Handler(void *Event)
   SVCCTL_EvtAckStatus_t return_value;
   hci_event_pckt *event_pckt;
   evt_blecore_aci *blecore_evt;
+  aci_gatt_attribute_modified_event_rp0 *attribute_modified;
+  aci_gatt_read_permit_req_event_rp0    *read_req;
   Custom_STM_App_Notification_evt_t     Notification;
   /* USER CODE BEGIN Custom_STM_Event_Handler_1 */
 
@@ -139,6 +153,95 @@ static SVCCTL_EvtAckStatus_t Custom_STM_Event_Handler(void *Event)
           /* USER CODE BEGIN EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_BEGIN */
 
           /* USER CODE END EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_BEGIN */
+          attribute_modified = (aci_gatt_attribute_modified_event_rp0*)blecore_evt->data;
+          if (attribute_modified->Attr_Handle == (CustomContext.CustomBat_LvlHdle + CHARACTERISTIC_DESCRIPTOR_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1 */
+
+            /* USER CODE END CUSTOM_STM_Service_2_Char_1 */
+            switch (attribute_modified->Attr_Data[0])
+            {
+              /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_attribute_modified */
+
+              /* USER CODE END CUSTOM_STM_Service_2_Char_1_attribute_modified */
+
+              /* Disabled Notification management */
+              case (!(COMSVC_Notification)):
+                /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_Disabled_BEGIN */
+
+                /* USER CODE END CUSTOM_STM_Service_2_Char_1_Disabled_BEGIN */
+                Notification.Custom_Evt_Opcode = CUSTOM_STM_BAT_LVL_NOTIFY_DISABLED_EVT;
+                Custom_STM_App_Notification(&Notification);
+                /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_Disabled_END */
+
+                /* USER CODE END CUSTOM_STM_Service_2_Char_1_Disabled_END */
+                break;
+
+              /* Enabled Notification management */
+              case COMSVC_Notification:
+                /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_COMSVC_Notification_BEGIN */
+
+                /* USER CODE END CUSTOM_STM_Service_2_Char_1_COMSVC_Notification_BEGIN */
+                Notification.Custom_Evt_Opcode = CUSTOM_STM_BAT_LVL_NOTIFY_ENABLED_EVT;
+                Custom_STM_App_Notification(&Notification);
+                /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_COMSVC_Notification_END */
+
+                /* USER CODE END CUSTOM_STM_Service_2_Char_1_COMSVC_Notification_END */
+                break;
+
+              default:
+                /* USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_default */
+
+                /* USER CODE END CUSTOM_STM_Service_2_Char_1_default */
+              break;
+            }
+          }  /* if (attribute_modified->Attr_Handle == (CustomContext.CustomBat_LvlHdle + CHARACTERISTIC_DESCRIPTOR_ATTRIBUTE_OFFSET))*/
+
+          else if (attribute_modified->Attr_Handle == (CustomContext.CustomReportHdle + CHARACTERISTIC_DESCRIPTOR_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3 */
+
+            /* USER CODE END CUSTOM_STM_Service_3_Char_3 */
+            switch (attribute_modified->Attr_Data[0])
+            {
+              /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_attribute_modified */
+
+              /* USER CODE END CUSTOM_STM_Service_3_Char_3_attribute_modified */
+
+              /* Disabled Notification management */
+              case (!(COMSVC_Notification)):
+                /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_Disabled_BEGIN */
+
+                /* USER CODE END CUSTOM_STM_Service_3_Char_3_Disabled_BEGIN */
+                Notification.Custom_Evt_Opcode = CUSTOM_STM_REPORT_NOTIFY_DISABLED_EVT;
+                Custom_STM_App_Notification(&Notification);
+                /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_Disabled_END */
+
+                /* USER CODE END CUSTOM_STM_Service_3_Char_3_Disabled_END */
+                break;
+
+              /* Enabled Notification management */
+              case COMSVC_Notification:
+                /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_COMSVC_Notification_BEGIN */
+
+                /* USER CODE END CUSTOM_STM_Service_3_Char_3_COMSVC_Notification_BEGIN */
+                Notification.Custom_Evt_Opcode = CUSTOM_STM_REPORT_NOTIFY_ENABLED_EVT;
+                Custom_STM_App_Notification(&Notification);
+                /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_COMSVC_Notification_END */
+
+                /* USER CODE END CUSTOM_STM_Service_3_Char_3_COMSVC_Notification_END */
+                break;
+
+              default:
+                /* USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_default */
+
+                /* USER CODE END CUSTOM_STM_Service_3_Char_3_default */
+              break;
+            }
+          }  /* if (attribute_modified->Attr_Handle == (CustomContext.CustomReportHdle + CHARACTERISTIC_DESCRIPTOR_ATTRIBUTE_OFFSET))*/
+
           /* USER CODE BEGIN EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_END */
 
           /* USER CODE END EVT_BLUE_GATT_ATTRIBUTE_MODIFIED_END */
@@ -148,6 +251,73 @@ static SVCCTL_EvtAckStatus_t Custom_STM_Event_Handler(void *Event)
           /* USER CODE BEGIN EVT_BLUE_GATT_READ_PERMIT_REQ_BEGIN */
 
           /* USER CODE END EVT_BLUE_GATT_READ_PERMIT_REQ_BEGIN */
+          read_req = (aci_gatt_read_permit_req_event_rp0*)blecore_evt->data;
+          if (read_req->Attribute_Handle == (CustomContext.CustomMod_NumbHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_1_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_1_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_1_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_1_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomMod_NumbHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
+          else if (read_req->Attribute_Handle == (CustomContext.CustomPnp_IdHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_1_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_1_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_1_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_1_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomPnp_IdHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
+          else if (read_req->Attribute_Handle == (CustomContext.CustomBat_LvlHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_2_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_2_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_2_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomBat_LvlHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
+          else if (read_req->Attribute_Handle == (CustomContext.CustomHid_InfoHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_1_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomHid_InfoHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
+          else if (read_req->Attribute_Handle == (CustomContext.CustomRep_MapHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_2_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomRep_MapHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
+          else if (read_req->Attribute_Handle == (CustomContext.CustomReportHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
+          {
+            return_value = SVCCTL_EvtAckFlowEnable;
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_1*/
+            aci_gatt_allow_read(read_req->Connection_Handle);
+            /*USER CODE BEGIN CUSTOM_STM_Service_3_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2 */
+
+            /*USER CODE END CUSTOM_STM_Service_3_Char_3_ACI_GATT_READ_PERMIT_REQ_VSEVT_CODE_2*/
+          } /* if (read_req->Attribute_Handle == (CustomContext.CustomReportHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
           /* USER CODE BEGIN EVT_BLUE_GATT_READ_PERMIT_REQ_END */
 
           /* USER CODE END EVT_BLUE_GATT_READ_PERMIT_REQ_END */
@@ -215,49 +385,231 @@ void SVCCTL_InitCustomSvc(void)
   SVCCTL_RegisterSvcHandler(Custom_STM_Event_Handler);
 
   /**
-   *          easYYoke_SVC
+   *          Device_Information
    *
-   * Max_Attribute_Records = 1 + 2*1 + 1*no_of_char_with_notify_or_indicate_property + 1*no_of_char_with_broadcast_property
-   * service_max_attribute_record = 1 for easYYoke_SVC +
-   *                                2 for easYYoke_CH +
-   *                              = 3
+   * Max_Attribute_Records = 1 + 2*3 + 1*no_of_char_with_notify_or_indicate_property + 1*no_of_char_with_broadcast_property
+   * service_max_attribute_record = 1 for Device_Information +
+   *                                2 for Manufacturer_Name_String +
+   *                                2 for Model_Number_String +
+   *                                2 for PnP_ID +
+   *                              = 7
    */
 
-  COPY_EASYYOKE_SVC_UUID(uuid.Char_UUID_128);
-  ret = aci_gatt_add_service(UUID_TYPE_128,
+  uuid.Char_UUID_16 = 0x180a;
+  ret = aci_gatt_add_service(UUID_TYPE_16,
                              (Service_UUID_t *) &uuid,
                              PRIMARY_SERVICE,
-                             3,
-                             &(CustomContext.CustomEasyyoke_SvcHdle));
+                             7,
+                             &(CustomContext.CustomDevinfoHdle));
   if (ret != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : aci_gatt_add_service command: easYYoke_SVC, error code: 0x%x \n\r", ret);
+    APP_DBG_MSG("  Fail   : aci_gatt_add_service command: DevInfo, error code: 0x%x \n\r", ret);
   }
   else
   {
-    APP_DBG_MSG("  Success: aci_gatt_add_service command: easYYoke_SVC \n\r");
+    APP_DBG_MSG("  Success: aci_gatt_add_service command: DevInfo \n\r");
   }
 
   /**
-   *  easYYoke_CH
+   *  Manufacturer_Name_String
    */
-  COPY_EASYYOKE_CH_UUID(uuid.Char_UUID_128);
-  ret = aci_gatt_add_char(CustomContext.CustomEasyyoke_SvcHdle,
-                          UUID_TYPE_128, &uuid,
-                          SizeEasyyoke_Ch,
+  uuid.Char_UUID_16 = 0x2a29;
+  ret = aci_gatt_add_char(CustomContext.CustomDevinfoHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeMan_Name,
                           CHAR_PROP_READ,
                           ATTR_PERMISSION_NONE,
                           GATT_DONT_NOTIFY_EVENTS,
                           0x10,
                           CHAR_VALUE_LEN_CONSTANT,
-                          &(CustomContext.CustomEasyyoke_ChHdle));
+                          &(CustomContext.CustomMan_NameHdle));
   if (ret != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : EASYYOKE_CH, error code: 0x%x \n\r", ret);
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : MAN_NAME, error code: 0x%x \n\r", ret);
   }
   else
   {
-    APP_DBG_MSG("  Success: aci_gatt_add_char command   : EASYYOKE_CH \n\r");
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : MAN_NAME \n\r");
+  }
+  /**
+   *  Model_Number_String
+   */
+  uuid.Char_UUID_16 = 0x2a24;
+  ret = aci_gatt_add_char(CustomContext.CustomDevinfoHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeMod_Numb,
+                          CHAR_PROP_READ,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomMod_NumbHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : MOD_NUMB, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : MOD_NUMB \n\r");
+  }
+  /**
+   *  PnP_ID
+   */
+  uuid.Char_UUID_16 = 0x2a50;
+  ret = aci_gatt_add_char(CustomContext.CustomDevinfoHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizePnp_Id,
+                          CHAR_PROP_READ,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomPnp_IdHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : PNP_ID, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : PNP_ID \n\r");
+  }
+
+  /**
+   *          Battery
+   *
+   * Max_Attribute_Records = 1 + 2*1 + 1*no_of_char_with_notify_or_indicate_property + 1*no_of_char_with_broadcast_property
+   * service_max_attribute_record = 1 for Battery +
+   *                                2 for Battery_Level +
+   *                                1 for Battery_Level configuration descriptor +
+   *                              = 4
+   */
+
+  uuid.Char_UUID_16 = 0x180f;
+  ret = aci_gatt_add_service(UUID_TYPE_16,
+                             (Service_UUID_t *) &uuid,
+                             PRIMARY_SERVICE,
+                             4,
+                             &(CustomContext.CustomBattHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_service command: Batt, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_service command: Batt \n\r");
+  }
+
+  /**
+   *  Battery_Level
+   */
+  uuid.Char_UUID_16 = 0x2a19;
+  ret = aci_gatt_add_char(CustomContext.CustomBattHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeBat_Lvl,
+                          CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomBat_LvlHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : BAT_LVL, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : BAT_LVL \n\r");
+  }
+
+  /**
+   *          Human_Interface_Device
+   *
+   * Max_Attribute_Records = 1 + 2*3 + 1*no_of_char_with_notify_or_indicate_property + 1*no_of_char_with_broadcast_property
+   * service_max_attribute_record = 1 for Human_Interface_Device +
+   *                                2 for Human_Interface_Device_Information +
+   *                                2 for Report_Map +
+   *                                2 for Report +
+   *                                1 for Report configuration descriptor +
+   *                              = 8
+   */
+
+  uuid.Char_UUID_16 = 0x1812;
+  ret = aci_gatt_add_service(UUID_TYPE_16,
+                             (Service_UUID_t *) &uuid,
+                             PRIMARY_SERVICE,
+                             8,
+                             &(CustomContext.CustomHidHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_service command: HID, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_service command: HID \n\r");
+  }
+
+  /**
+   *  Human_Interface_Device_Information
+   */
+  uuid.Char_UUID_16 = 0x2a4a;
+  ret = aci_gatt_add_char(CustomContext.CustomHidHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeHid_Info,
+                          CHAR_PROP_READ,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomHid_InfoHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : HID_INFO, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : HID_INFO \n\r");
+  }
+  /**
+   *  Report_Map
+   */
+  uuid.Char_UUID_16 = 0x2a4b;
+  ret = aci_gatt_add_char(CustomContext.CustomHidHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeRep_Map,
+                          CHAR_PROP_READ,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomRep_MapHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : REP_MAP, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : REP_MAP \n\r");
+  }
+  /**
+   *  Report
+   */
+  uuid.Char_UUID_16 = 0x2a4d;
+  ret = aci_gatt_add_char(CustomContext.CustomHidHdle,
+                          UUID_TYPE_16, &uuid,
+                          SizeReport,
+                          CHAR_PROP_READ | CHAR_PROP_NOTIFY,
+                          ATTR_PERMISSION_NONE,
+                          GATT_NOTIFY_ATTRIBUTE_WRITE | GATT_NOTIFY_WRITE_REQ_AND_WAIT_FOR_APPL_RESP | GATT_NOTIFY_READ_REQ_AND_WAIT_FOR_APPL_RESP,
+                          0x10,
+                          CHAR_VALUE_LEN_CONSTANT,
+                          &(CustomContext.CustomReportHdle));
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gatt_add_char command   : REPORT, error code: 0x%x \n\r", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gatt_add_char command   : REPORT \n\r");
   }
 
   /* USER CODE BEGIN SVCCTL_InitCustomSvc_2 */
@@ -283,23 +635,137 @@ tBleStatus Custom_STM_App_Update_Char(Custom_STM_Char_Opcode_t CharOpcode, uint8
   switch (CharOpcode)
   {
 
-    case CUSTOM_STM_EASYYOKE_CH:
-      ret = aci_gatt_update_char_value(CustomContext.CustomEasyyoke_SvcHdle,
-                                       CustomContext.CustomEasyyoke_ChHdle,
+    case CUSTOM_STM_MAN_NAME:
+      ret = aci_gatt_update_char_value(CustomContext.CustomDevinfoHdle,
+                                       CustomContext.CustomMan_NameHdle,
                                        0, /* charValOffset */
-                                       SizeEasyyoke_Ch, /* charValueLen */
+                                       SizeMan_Name, /* charValueLen */
                                        (uint8_t *)  pPayload);
       if (ret != BLE_STATUS_SUCCESS)
       {
-        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value EASYYOKE_CH command, result : 0x%x \n\r", ret);
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value MAN_NAME command, result : 0x%x \n\r", ret);
       }
       else
       {
-        APP_DBG_MSG("  Success: aci_gatt_update_char_value EASYYOKE_CH command\n\r");
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value MAN_NAME command\n\r");
       }
       /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_1_Char_1*/
 
       /* USER CODE END CUSTOM_STM_App_Update_Service_1_Char_1*/
+      break;
+
+    case CUSTOM_STM_MOD_NUMB:
+      ret = aci_gatt_update_char_value(CustomContext.CustomDevinfoHdle,
+                                       CustomContext.CustomMod_NumbHdle,
+                                       0, /* charValOffset */
+                                       SizeMod_Numb, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value MOD_NUMB command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value MOD_NUMB command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_1_Char_2*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_1_Char_2*/
+      break;
+
+    case CUSTOM_STM_PNP_ID:
+      ret = aci_gatt_update_char_value(CustomContext.CustomDevinfoHdle,
+                                       CustomContext.CustomPnp_IdHdle,
+                                       0, /* charValOffset */
+                                       SizePnp_Id, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value PNP_ID command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value PNP_ID command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_1_Char_3*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_1_Char_3*/
+      break;
+
+    case CUSTOM_STM_BAT_LVL:
+      ret = aci_gatt_update_char_value(CustomContext.CustomBattHdle,
+                                       CustomContext.CustomBat_LvlHdle,
+                                       0, /* charValOffset */
+                                       SizeBat_Lvl, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value BAT_LVL command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value BAT_LVL command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_2_Char_1*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_2_Char_1*/
+      break;
+
+    case CUSTOM_STM_HID_INFO:
+      ret = aci_gatt_update_char_value(CustomContext.CustomHidHdle,
+                                       CustomContext.CustomHid_InfoHdle,
+                                       0, /* charValOffset */
+                                       SizeHid_Info, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value HID_INFO command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value HID_INFO command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_3_Char_1*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_3_Char_1*/
+      break;
+
+    case CUSTOM_STM_REP_MAP:
+      ret = aci_gatt_update_char_value(CustomContext.CustomHidHdle,
+                                       CustomContext.CustomRep_MapHdle,
+                                       0, /* charValOffset */
+                                       SizeRep_Map, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value REP_MAP command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value REP_MAP command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_3_Char_2*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_3_Char_2*/
+      break;
+
+    case CUSTOM_STM_REPORT:
+      ret = aci_gatt_update_char_value(CustomContext.CustomHidHdle,
+                                       CustomContext.CustomReportHdle,
+                                       0, /* charValOffset */
+                                       SizeReport, /* charValueLen */
+                                       (uint8_t *)  pPayload);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("  Fail   : aci_gatt_update_char_value REPORT command, result : 0x%x \n\r", ret);
+      }
+      else
+      {
+        APP_DBG_MSG("  Success: aci_gatt_update_char_value REPORT command\n\r");
+      }
+      /* USER CODE BEGIN CUSTOM_STM_App_Update_Service_3_Char_3*/
+
+      /* USER CODE END CUSTOM_STM_App_Update_Service_3_Char_3*/
       break;
 
     default:

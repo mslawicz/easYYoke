@@ -34,14 +34,38 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 typedef enum
 {
-  /* easYYoke_SVC */
-  CUSTOM_STM_EASYYOKE_CH,
+  /* Device_Information */
+  CUSTOM_STM_MAN_NAME,
+  CUSTOM_STM_MOD_NUMB,
+  CUSTOM_STM_PNP_ID,
+  /* Battery */
+  CUSTOM_STM_BAT_LVL,
+  /* Human_Interface_Device */
+  CUSTOM_STM_HID_INFO,
+  CUSTOM_STM_REP_MAP,
+  CUSTOM_STM_REPORT,
 } Custom_STM_Char_Opcode_t;
 
 typedef enum
 {
-  /* easYYoke_CH */
-  CUSTOM_STM_EASYYOKE_CH_READ_EVT,
+  /* Manufacturer_Name_String */
+  CUSTOM_STM_MAN_NAME_READ_EVT,
+  /* Model_Number_String */
+  CUSTOM_STM_MOD_NUMB_READ_EVT,
+  /* PnP_ID */
+  CUSTOM_STM_PNP_ID_READ_EVT,
+  /* Battery_Level */
+  CUSTOM_STM_BAT_LVL_READ_EVT,
+  CUSTOM_STM_BAT_LVL_NOTIFY_ENABLED_EVT,
+  CUSTOM_STM_BAT_LVL_NOTIFY_DISABLED_EVT,
+  /* Human_Interface_Device_Information */
+  CUSTOM_STM_HID_INFO_READ_EVT,
+  /* Report_Map */
+  CUSTOM_STM_REP_MAP_READ_EVT,
+  /* Report */
+  CUSTOM_STM_REPORT_READ_EVT,
+  CUSTOM_STM_REPORT_NOTIFY_ENABLED_EVT,
+  CUSTOM_STM_REPORT_NOTIFY_DISABLED_EVT,
 
   CUSTOM_STM_BOOT_REQUEST_EVT
 } Custom_STM_Opcode_evt_t;
@@ -65,7 +89,13 @@ typedef struct
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
-extern uint8_t SizeEasyyoke_Ch;
+extern uint8_t SizeMan_Name;
+extern uint8_t SizeMod_Numb;
+extern uint8_t SizePnp_Id;
+extern uint8_t SizeBat_Lvl;
+extern uint8_t SizeHid_Info;
+extern uint8_t SizeRep_Map;
+extern uint8_t SizeReport;
 
 /* USER CODE BEGIN EC */
 
