@@ -23,7 +23,7 @@
 #include "custom_stm.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "main.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,8 +72,8 @@ uint8_t SizeMod_Numb = 1;
 uint8_t SizePnp_Id = 1;
 uint8_t SizeBat_Lvl = 1;
 uint8_t SizeHid_Info = 50;
-uint8_t SizeRep_Map = 1;
-uint8_t SizeReport = 1;
+uint8_t SizeRep_Map = JOYSTICK_REPORT_SIZE;
+uint8_t SizeReport = JOYSTICK_DATA_SIZE;
 
 /**
  * START of Section BLE_DRIVER_CONTEXT

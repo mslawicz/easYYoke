@@ -48,7 +48,14 @@ typedef struct
 } Custom_App_Context_t;
 
 /* USER CODE BEGIN PTD */
-
+typedef struct
+{
+  int16_t X;
+  int16_t Y;
+  int16_t Z;
+  int8_t HAT;
+  int8_t buttons;
+} joystick_report_t;
 /* USER CODE END PTD */
 
 /* Private defines ------------------------------------------------------------*/
@@ -76,7 +83,47 @@ uint8_t UpdateCharData[247];
 uint8_t NotifyCharData[247];
 
 /* USER CODE BEGIN PV */
-
+static uint8_t joystick_report[JOYSTICK_REPORT_SIZE] =
+{
+  /* joystick report */
+  0x05, 0x01,                    /* USAGE_PAGE (Generic Desktop) */
+  0x09, 0x04,                    /* USAGE (Joystick) */
+  0xa1, 0x01,                    /* COLLECTION (Application) */
+  0x09, 0x01,                    /*   USAGE (Pointer) */
+  0xa1, 0x00,                    /*   COLLECTION (Physical) */
+  0x75, 0x10,                    /*     REPORT_SIZE (16) */
+  0x16, 0x01, 0x80,              /*     LOGICAL_MINIMUM (-32767) */
+  0x26, 0xff, 0x7f,              /*     LOGICAL_MAXIMUM (32767) */
+  0x09, 0x30,                    /*     USAGE (X) */
+  0x09, 0x31,                    /*     USAGE (Y) */
+  0x09, 0x32,                    /*     USAGE (Z) */
+  0x95, 0x03,                    /*     REPORT_COUNT (3) */
+  0x81, 0x02,                    /*     INPUT (Data,Var,Abs) */
+  0xc0,                          /*   END_COLLECTION (Physical) */
+  0x09, 0x39,                    /*   USAGE (Hat switch) */
+  0x15, 0x01,                    /*   LOGICAL_MINIMUM (1) */
+  0x25, 0x08,                    /*   LOGICAL_MAXIMUM (8) */
+  0x35, 0x00,                    /*   PHYSICAL_MINIMUM (0) */
+  0x46, 0x3b, 0x01,              /*   PHYSICAL_MAXIMUM (315) */
+  0x65, 0x14,                    /*   UNIT (Eng Rot:Angular Pos) */
+  0x75, 0x04,                    /*   REPORT_SIZE (4) */
+  0x95, 0x01,                    /*   REPORT_COUNT (1) */
+  0x81, 0x42,                    /*   INPUT (Data,Var,Abs, Null) */
+  0x75, 0x04,                    /*   REPORT_SIZE (4) */
+  0x95, 0x01,                    /*   REPORT_COUNT (1) */
+  0x81, 0x41,                    /*   INPUT (Cnst,Ary,Abs,Null) */
+  0x05, 0x09,                    /*   USAGE_PAGE (Button) */
+  0x19, 0x01,                    /*   USAGE_MINIMUM (Button 1) */
+  0x29, 0x08,                    /*   USAGE_MAXIMUM (Button 8) */
+  0x15, 0x00,                    /*   LOGICAL_MINIMUM (0) */
+  0x25, 0x01,                    /*   LOGICAL_MAXIMUM (1) */
+  0x75, 0x01,                    /*   REPORT_SIZE (1) */
+  0x95, 0x08,                    /*   REPORT_COUNT (8) */
+  0x55, 0x00,                    /*   UNIT_EXPONENT (0) */
+  0x65, 0x00,                    /*   UNIT (None) */
+  0x81, 0x02,                    /*   INPUT (Data,Var,Abs) */
+  0xc0                           /* END_COLLECTION (Application) */
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -225,7 +272,20 @@ void Custom_APP_Notification(Custom_App_ConnHandle_Not_evt_t *pNotification)
 void Custom_APP_Init(void)
 {
   /* USER CODE BEGIN CUSTOM_APP_Init */
+    tBleStatus result = BLE_STATUS_INVALID_PARAMS;
 
+    /*UTIL_SEQ_RegTask( 1<< CFG_TASK_HID_UPDATE_REQ_ID, UTIL_SEQ_RFU, HIDSAPP_Profile_UpdateChar );*/
+
+    result = Custom_STM_App_Update_Char(CUSTOM_STM_REP_MAP, (uint8_t *)joystick_report);
+
+    if( result == BLE_STATUS_SUCCESS )
+    {
+      BLE_DBG_APP_MSG("Report Map Successfully Sent\n");
+    }
+    else
+    {
+      BLE_DBG_APP_MSG("Sending of Report Map Failed error 0x%X\n", result);
+    }
   /* USER CODE END CUSTOM_APP_Init */
   return;
 }
@@ -297,7 +357,9 @@ void Custom_Report_Update_Char(void) /* Property Read */
   uint8_t updateflag = 0;
 
   /* USER CODE BEGIN Report_UC_1*/
-
+  joystick_report_t joystick_report = {1,2,3,4,5};
+  memcpy(UpdateCharData, &joystick_report, sizeof(joystick_report_t));
+  updateflag = 1;
   /* USER CODE END Report_UC_1*/
 
   if (updateflag != 0)
