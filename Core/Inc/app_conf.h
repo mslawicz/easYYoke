@@ -597,7 +597,7 @@ typedef enum
 #define MAX_DBG_TRACE_MSG_SIZE   1024
 
 /* USER CODE BEGIN Defines */
-#include "batt_api.h"
+
 /* USER CODE END Defines */
 
 /******************************************************************************
@@ -658,7 +658,7 @@ typedef enum
   CFG_IDLEEVT_HCI_CMD_EVT_RSP_ID,
   CFG_IDLEEVT_SYSTEM_HCI_CMD_EVT_RSP_ID,
   /* USER CODE BEGIN CFG_IdleEvt_Id_t */
-  CFG_TASK_BAS_LEVEL_REQ_ID,
+
   /* USER CODE END CFG_IdleEvt_Id_t */
 } CFG_IdleEvt_Id_t;
 

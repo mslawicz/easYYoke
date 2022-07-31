@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "batt_api.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -126,6 +126,14 @@ int main(void)
     MX_APPE_Process();
 
     /* USER CODE BEGIN 3 */
+    if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 1)
+    {
+        updateBatteryLevel(33U);
+    }
+    if(HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == 0)
+    {
+        updateBatteryLevel(66U);
+    }
   }
   /* USER CODE END 3 */
 }

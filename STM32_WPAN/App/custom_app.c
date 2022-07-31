@@ -29,7 +29,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "batt_api.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -247,7 +247,12 @@ void Custom_Bat_lvl_Update_Char(void) /* Property Read */
   uint8_t updateflag = 0;
 
   /* USER CODE BEGIN Bat_lvl_UC_1*/
-
+  static uint8_t previousBatLvl = 0;
+  if(UpdateCharData[0] != previousBatLvl)
+  {
+      previousBatLvl = UpdateCharData[0];
+      updateflag = 1;
+  }
   /* USER CODE END Bat_lvl_UC_1*/
 
   if (updateflag != 0)
@@ -266,7 +271,12 @@ void Custom_Bat_lvl_Send_Notification(void) /* Property Notification */
   uint8_t updateflag = 0;
 
   /* USER CODE BEGIN Bat_lvl_NS_1*/
-
+  static uint8_t previousBatLvl = 0;
+  if(NotifyCharData[0] != previousBatLvl)
+  {
+      previousBatLvl = NotifyCharData[0];
+      updateflag = 1;
+  }
   /* USER CODE END Bat_lvl_NS_1*/
 
   if (updateflag != 0)
@@ -322,5 +332,17 @@ void Custom_Report_Send_Notification(void) /* Property Notification */
 }
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS*/
+
+void updateBatteryLevel(uint8_t level)
+{
+    UpdateCharData[0] = level;
+    Custom_Bat_lvl_Update_Char();
+}
+
+void notifyBatteryLevel(uint8_t level)
+{
+    NotifyCharData[0] = level;
+    Custom_Bat_lvl_Send_Notification();
+}
 
 /* USER CODE END FD_LOCAL_FUNCTIONS*/
