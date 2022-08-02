@@ -126,7 +126,7 @@ int main(void)
     MX_APPE_Process();
 
     /* USER CODE BEGIN 3 */
-    if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 1)
+    if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 0)
     {
         updateBatteryLevel(33U);
     }
@@ -440,7 +440,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD2_Pin LD3_Pin LD1_Pin */
@@ -453,7 +453,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : B2_Pin B3_Pin */
   GPIO_InitStruct.Pin = B2_Pin|B3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 }
